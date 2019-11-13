@@ -29,33 +29,25 @@
       </el-menu>
     </div>
     <div id="routerBox">
-      <el-form ref="form" :model="form" label-width="80px">
-        <el-form-item label="特殊资源">
-          <el-radio-group v-model="form.resource">
-            <el-radio label="线上品牌商赞助" value="1"></el-radio>
-            <el-radio label="线下场地免费" value="2"></el-radio>
-            <el-radio label="线下场地免费" value="2"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="活动名称">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="活动区域">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="省/自治区/直辖市" value="1"></el-option>
-            <el-option label="地级市" value="2"></el-option>
-            <el-option label="区/县" value="3"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">立即创建</el-button>
-          <el-button>取消</el-button>
-        </el-form-item>
-      </el-form>
+      <div style="width:200px;heigt:100%;overflow:auto;">
+        <el-input placeholder="输入关键字进行过滤" v-model="filterText"></el-input>
+        <el-tree
+          class="filter-tree"
+          :data="data"
+          :props="defaultProps"
+          :filter-node-method="filterNode"
+          ref="tree"
+          @node-click="handleNodeClick"
+        ></el-tree>
+      </div>
+      <div style="width:200px;">
+        <input type="button" value="获取树" @click="getTreeData" />
+      </div>
     </div>
   </div>
 </template>
 <script>
+import toTreeData from "../../utils/toTreeData";
 export default {
   name: "OwnerLogin",
   props: [],
@@ -63,8 +55,14 @@ export default {
   data() {
     return {
       form: {
-        name: '',
-        region: ''
+        name: "",
+        region: ""
+      },
+      data: [],
+      filterText: "",
+      defaultProps: {
+        children: "children",
+        label: "name"
       }
     };
   },
@@ -76,12 +74,32 @@ export default {
     handleClose(key, keyPath) {
       console.log(key, keyPath);
     },
-    onSubmit () {
-
+    handleNodeClick(data) {
+      console.log(data);
+    },
+    onSubmit() {},
+    initTreeData(arr) {
+      let treeNode = toTreeData(arr, { id: "id", parentId: "pid" });
+      this.data = treeNode;
+    },
+    getTreeData() {
+      this.$http.get("/web/getTreeNode").then(response => {
+        this.initTreeData(response.data);
+      });
+    },
+    filterNode(value, data) {
+      if (!value) return true;
+      return data.name.indexOf(value) !== -1;
     }
   },
-  watch: {},
-  created() {},
+  watch: {
+    filterText(val) {
+      this.$refs.tree.filter(val);
+    }
+  },
+  created() {
+    this.getTreeData();
+  },
   mounted() {}
 };
 </script>
@@ -93,5 +111,6 @@ export default {
 #routerBox {
   display: flex;
   flex: 1;
+  overflow: hidden;
 }
 </style>
