@@ -20,16 +20,31 @@ function toTreeData(data, paramsConfig) {
         parentId: paramsConfig && paramsConfig.parentId ? paramsConfig.parentId : 'parentId'
     };
 
-    //找寻根节点
+    //找寻根节点 将父节点为空,或找不到父节点的 对象复制出去
     for (let i = 0; i < childrenArr.length; i++) {
-
         if (childrenArr[i][attributes.parentId] === '' || childrenArr[i][attributes.parentId] === null|| childrenArr[i][attributes.parentId] === -1) {
             tree.push(treeObj(childrenArr[i]));
-            childrenArr.splice(i, 1);
-            i--;
+        } else {
+            let flag = true;
+            for (let j = 0;j<childrenArr.length;j++) {
+                if (childrenArr[i][attributes.parentId] === childrenArr[j][attributes.id]){
+                    flag = false;
+                }
+            }
+            if (flag) {
+                tree.push(treeObj(childrenArr[i]));
+            }
         }
     }
-
+    // 剔除父节点
+    for (let i = 0; i < tree.length; i++) {
+        for (let j = 0;j<childrenArr.length;j++) {
+            if (childrenArr[j][attributes.id] === tree[i][attributes.id]){
+                childrenArr.splice(j, 1);
+                j--;
+            }
+        }
+    }
     run(tree);
 
     //找寻子树
@@ -47,8 +62,7 @@ function toTreeData(data, paramsConfig) {
                 run(rootArr[i].children);
             }
         }
-    }
-
+    };
     return tree;
 
 }
