@@ -22,7 +22,7 @@ function toTreeData(data, paramsConfig) {
 
     //找寻根节点 将父节点为空,或找不到父节点的 对象复制出去
     for (let i = 0; i < childrenArr.length; i++) {
-        if (childrenArr[i][attributes.parentId] === '' || childrenArr[i][attributes.parentId] === null|| childrenArr[i][attributes.parentId] === -1) {
+        if (childrenArr[i][attributes.parentId] === '' || childrenArr[i][attributes.parentId] === null|| childrenArr[i][attributes.parentId] === -1 || childrenArr[i][attributes.parentId] === 0) {
             tree.push(treeObj(childrenArr[i]));
         } else {
             let flag = true;
@@ -63,6 +63,7 @@ function toTreeData(data, paramsConfig) {
             }
         }
     };
+    console.log(tree);
     return tree;
 
 }

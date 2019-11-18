@@ -79,7 +79,7 @@ export default {
     },
     onSubmit() {},
     initTreeData(arr) {
-      let treeNode = toTreeData(arr, { id: "id", parentId: "pid" });
+      let treeNode = toTreeData(arr, { id: "id", parentId: "ParentId" });
       this.data = treeNode;
     },
     getTreeData() {
